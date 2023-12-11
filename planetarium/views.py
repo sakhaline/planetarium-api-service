@@ -18,6 +18,7 @@ from planetarium.serializers import (ShowThemeSerializer,
                                      ReservationSerializer,
                                      ShowSessionSerializer,
                                      ShowSessionListSerializer,
+                                     ShowSessionDetailSerializer,
                                      TicketSerializer,
                                      TicketListSerializer,)
 
@@ -99,7 +100,7 @@ class ShowSessionDetail(APIView):
 
     def get(self, request, pk):
         show_session = self.get_object(pk)
-        serializer = ShowSessionSerializer(show_session)
+        serializer = ShowSessionDetailSerializer(show_session)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
