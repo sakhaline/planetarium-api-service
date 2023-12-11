@@ -1,6 +1,5 @@
 from django.http import Http404
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from rest_framework.views import APIView
@@ -14,6 +13,7 @@ from planetarium.models import (ShowTheme,
 from planetarium.serializers import (ShowThemeSerializer,
                                      PlanetariumDomeSerializer,
                                      AstronomyShowListSerializer,
+                                     AstronomyShowDetailSerializer,
                                      AstronomyShowSerializer,
                                      ReservationSerializer,
                                      ShowSessionSerializer,
@@ -82,7 +82,7 @@ class ShowSessionList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = ShowSessionListSerializer(data=request.data)
+        serializer = ShowSessionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -241,7 +241,7 @@ class AstronomyShowList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = AstronomyShowListSerializer(data=request.data)
+        serializer = AstronomyShowSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
@@ -258,7 +258,7 @@ class AstronomyShowDetail(APIView):
 
     def get(self, request, pk):
         astronomy_show = self.get_object(pk=pk)
-        serializer = AstronomyShowSerializer(astronomy_show)
+        serializer = AstronomyShowDetailSerializer(astronomy_show)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
