@@ -6,9 +6,6 @@ from planetarium_config import settings
 class ShowTheme(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
-    class Meta:
-        ordering = ("name",)
-
     def __str__(self):
         return self.name
 
@@ -20,9 +17,6 @@ class AstronomyShow(models.Model):
         to=ShowTheme, related_name="astronomy_shows",
     )
 
-    class Meta:
-        ordering = ("title",)
-
     def __str__(self):
         return self.title
 
@@ -31,9 +25,6 @@ class PlanetariumDome(models.Model):
     name = models.CharField(max_length=50)
     rows = models.IntegerField()
     seats_in_row = models.IntegerField()
-
-    class Meta:
-        ordering = ("name",)
 
     @property
     def capacity(self) -> int:
@@ -83,7 +74,6 @@ class Ticket(models.Model):
     )
 
     class Meta:
-        ordering = ("row", "seat", "show_session")
         unique_together = ("row", "seat", "show_session")
 
     def __str__(self):
