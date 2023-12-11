@@ -10,21 +10,21 @@ class ShowTheme(models.Model):
         ordering = ("name",)
 
     def __str__(self):
-        return {self.name}
+        return self.name
 
 
 class AstronomyShow(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     themes = models.ManyToManyField(
-        to=ShowTheme, related_name="astronomy_shows", on_delete=models.SET_NULL,
+        to=ShowTheme, related_name="astronomy_shows",
     )
 
     class Meta:
         ordering = ("title",)
 
     def __str__(self):
-        return {self.title}
+        return self.title
 
 
 class PlanetariumDome(models.Model):
@@ -69,7 +69,7 @@ class ShowSession(models.Model):
         ordering = ("astronomy_show", "planetarium_dome")
 
     def __str__(self):
-        return f"{self.planetarium_dome.name} - {self.astronomy_show.title}"
+        return self.astronomy_show.title + " " + str(self.show_time)
 
 
 class Ticket(models.Model):
