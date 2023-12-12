@@ -1,5 +1,5 @@
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -23,15 +23,25 @@ from planetarium.serializers import (ShowThemeSerializer,
                                      ShowSessionListSerializer,
                                      ShowSessionDetailSerializer,)
 
+from planetarium.filters import ShowSessionFilter, AstronomyShowFilter
 
-class ShowSessionList(APIView):
-    def get(self, request):
-        show_sessions = ShowSession.objects.all()
-        serializer = ShowSessionListSerializer(show_sessions, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        serializer = ShowSessionSerializer(data=request.data)
+class ShowSessionList(generics.ListCreateAPIView):
+    queryset = ShowSession.objects.all()
+    serializer_class = ShowSessionListSerializer
+    filterset_class = ShowSessionFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ShowSessionListSerializer
+        elif self.request.method == 'POST':
+            return ShowSessionSerializer
+        return ShowSessionListSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -188,19 +198,26 @@ class ShowThemeDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class AstronomyShowList(APIView):
-    filterset_fields = ["title", "themes"]
-    def get(self, request):
-        astronomy_shows = AstronomyShow.objects.all()
-        serializer = AstronomyShowListSerializer(astronomy_shows, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class AstronomyShowList(generics.ListCreateAPIView):
+    queryset = AstronomyShow.objects.all()
+    serializer_class = AstronomyShowListSerializer
+    filterset_class = AstronomyShowFilter
 
-    def post(self, request):
-        serializer = AstronomyShowSerializer(data=request.data)
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return AstronomyShowListSerializer
+        elif self.request.method == 'POST':
+            return AstronomyShowSerializer
+        return AstronomyShowListSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
