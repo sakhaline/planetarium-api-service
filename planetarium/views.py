@@ -77,36 +77,18 @@ class ShowSessionDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class ReservationList(APIView):
-#     pagination_class = StandardResultsSetPagination
-#     queryset = Reservation.objects.all()
-#
-#     def get(self, request):
-#         reservations = Reservation.objects.all()
-#         serializer = ReservationListSerializer(reservations, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#     def post(self, request):
-#         serializer = ReservationSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ReservationList(APIView):
+    def get(self, request):
+        show_sessions = Reservation.objects.all()
 
+        paginator = PageNumberPagination()
+        paginator.page_size = 5
+        result_page = paginator.paginate_queryset(show_sessions, request)
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 5
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+        serializer = ReservationListSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
-
-class ReservationListAPIView(ListAPIView):
-    queryset = Reservation.objects.all()
-    serializer_class = ReservationListSerializer
-    pagination_class = StandardResultsSetPagination
-
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = ReservationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -207,6 +189,7 @@ class ShowThemeDetail(APIView):
 
 
 class AstronomyShowList(APIView):
+    filterset_fields = ["title", "themes"]
     def get(self, request):
         astronomy_shows = AstronomyShow.objects.all()
         serializer = AstronomyShowListSerializer(astronomy_shows, many=True)
