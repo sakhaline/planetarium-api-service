@@ -8,9 +8,7 @@ from planetarium.views import (ShowThemeList,
                                ReservationList,
                                ReservationDetail,
                                ShowSessionList,
-                               ShowSessionDetail,
-                               TicketList,
-                               TicketDetail,)
+                               ShowSessionDetail,)
 
 app_name = "planetarium"
 
@@ -25,6 +23,4 @@ urlpatterns = [
     path("reservations/<int:pk>/", ReservationDetail.as_view(), name="reservation-detail"),
     path("show_sessions/", ShowSessionList.as_view(), name="show-session-list"),
     path("show_sessions/<int:pk>/", ShowSessionDetail.as_view(), name="show-session-detail"),
-    path("tickets/", TicketList.as_view(), name="ticket-list"),
-    path("tickets/<int:pk>/", TicketDetail.as_view(), name="ticket-detail"),
 ]

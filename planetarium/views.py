@@ -8,72 +8,18 @@ from planetarium.models import (ShowTheme,
                                 AstronomyShow,
                                 PlanetariumDome,
                                 Reservation,
-                                ShowSession,
-                                Ticket,)
+                                ShowSession,)
+
 from planetarium.serializers import (ShowThemeSerializer,
                                      PlanetariumDomeSerializer,
                                      AstronomyShowListSerializer,
                                      AstronomyShowDetailSerializer,
                                      AstronomyShowSerializer,
                                      ReservationSerializer,
+                                     ReservationListSerializer,
                                      ShowSessionSerializer,
                                      ShowSessionListSerializer,
-                                     ShowSessionDetailSerializer,
-                                     TicketSerializer,
-                                     TicketListSerializer,)
-
-
-class TicketList(APIView):
-    def get(self, request):
-        tickets = Ticket.objects.all()
-        serializer = TicketListSerializer(tickets, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        serializer = TicketListSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class TicketDetail(APIView):
-    def get_object(self, pk):
-        try:
-            return Ticket.objects.get(pk=pk)
-        except Ticket.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk):
-        ticket = self.get_object(pk)
-        serializer = TicketSerializer(ticket)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, pk):
-        ticket = self.get_object(pk)
-        serializer = TicketSerializer(ticket, data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request, pk):
-        ticket = self.get_object(pk)
-        serializer = TicketSerializer(ticket, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        ticket = self.get_object(pk)
-        ticket.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+                                     ShowSessionDetailSerializer,)
 
 
 class ShowSessionList(APIView):
@@ -132,7 +78,7 @@ class ShowSessionDetail(APIView):
 class ReservationList(APIView):
     def get(self, request):
         reservations = Reservation.objects.all()
-        serializer = ReservationSerializer(reservations, many=True)
+        serializer = ReservationListSerializer(reservations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
