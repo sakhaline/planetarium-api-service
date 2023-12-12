@@ -1,5 +1,7 @@
 from django.http import Http404
 from rest_framework import status
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from rest_framework.views import APIView
@@ -75,13 +77,36 @@ class ShowSessionDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ReservationList(APIView):
-    def get(self, request):
-        reservations = Reservation.objects.all()
-        serializer = ReservationListSerializer(reservations, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class ReservationList(APIView):
+#     pagination_class = StandardResultsSetPagination
+#     queryset = Reservation.objects.all()
+#
+#     def get(self, request):
+#         reservations = Reservation.objects.all()
+#         serializer = ReservationListSerializer(reservations, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#     def post(self, request):
+#         serializer = ReservationSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class ReservationListAPIView(ListAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationListSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def post(self, request, *args, **kwargs):
         serializer = ReservationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
