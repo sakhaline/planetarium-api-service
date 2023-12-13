@@ -1,22 +1,36 @@
 from django.urls import path
 
-from planetarium.views import (AstronomyShowDetail,
-                               AstronomyShowList,
-                               PlanetariumDomeDetail,
-                               PlanetariumDomeList,
-                               ReservationDetail,
-                               ReservationList,
-                               ShowSessionDetail,
-                               ShowSessionList,
-                               ShowThemeDetail,
-                               ShowThemeList,)
+from planetarium.views import (
+    AstronomyShowDetail,
+    AstronomyShowList,
+    PlanetariumDomeDetail,
+    PlanetariumDomeList,
+    ReservationDetail,
+    ReservationList,
+    ShowSessionDetail,
+    ShowSessionList,
+    ShowThemeDetail,
+    ShowThemeList,
+)
 
 app_name = "planetarium"
 
 urlpatterns = [
-    path("show_themes/", ShowThemeList.as_view(), name="show-theme-list"),
-    path("show_themes/<int:pk>/", ShowThemeDetail.as_view(), name="show-theme-detail"),
-    path("astronomy_shows/", AstronomyShowList.as_view(), name="astronomy-show-list"),
+    path(
+        "show_themes/",
+        ShowThemeList.as_view(),
+        name="show-theme-list",
+    ),
+    path(
+        "show_themes/<int:pk>/",
+        ShowThemeDetail.as_view(),
+        name="show-theme-detail",
+    ),
+    path(
+        "astronomy_shows/",
+        AstronomyShowList.as_view(),
+        name="astronomy-show-list",
+    ),
     path(
         "astronomy_shows/<int:pk>/",
         AstronomyShowDetail.as_view(),
@@ -34,9 +48,15 @@ urlpatterns = [
     ),
     path("reservations/", ReservationList.as_view(), name="reservation-list"),
     path(
-        "reservations/<int:pk>/", ReservationDetail.as_view(), name="reservation-detail"
+        "reservations/<int:pk>/",
+        ReservationDetail.as_view(),
+        name="reservation-detail",
     ),
-    path("show_sessions/", ShowSessionList.as_view(), name="show-session-list"),
+    path(
+        "show_sessions/",
+        ShowSessionList.as_view(),
+        name="show-session-list",
+    ),
     path(
         "show_sessions/<int:pk>/",
         ShowSessionDetail.as_view(),

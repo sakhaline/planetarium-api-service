@@ -68,7 +68,8 @@ class ShowSession(models.Model):
 
     @property
     def tickets_available(self):
-        total_seats = self.planetarium_dome.rows * self.planetarium_dome.seats_in_row
+        total_seats = (self.planetarium_dome.rows
+                       * self.planetarium_dome.seats_in_row)
         booked_tickets = self.tickets.count()
         return total_seats - booked_tickets
 
@@ -94,8 +95,15 @@ class Ticket(models.Model):
         unique_together = ("row", "seat", "show_session")
 
     @staticmethod
-    def validate_ticket(row, seat, planetarium_dome, error_to_raise):
-        for ticket_attr_value, ticket_attr_name, planetarium_dome_attr_name in [
+    def validate_ticket(row,
+                        seat,
+                        planetarium_dome,
+                        error_to_raise):
+        for (
+                ticket_attr_value,
+                ticket_attr_name,
+                planetarium_dome_attr_name
+        ) in [
             (row, "row", "rows"),
             (seat, "seat", "seats_in_row"),
         ]:

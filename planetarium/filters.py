@@ -23,12 +23,12 @@ class ShowSessionFilter(django_filters.FilterSet):
         label="Astronomy Show Title",
     )
 
-    show_time = django_filters.DateTimeFilter(
+    show_time = django_filters.DateFilter(
         field_name="show_time",
         lookup_expr="gte",
-        label="Show Time (Greater Than or Equal To)",
+        label="Show Date (Greater Than or Equal To)",
     )
 
     class Meta:
         model = ShowSession
-        fields = ["astronomy_show", "show_time"]
+        fields = ["astronomy_show__title", "show_time"]

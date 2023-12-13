@@ -2,8 +2,14 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework import serializers
 
-from planetarium.models import (AstronomyShow, PlanetariumDome, Reservation,
-                                ShowSession, ShowTheme, Ticket,)
+from planetarium.models import (
+    AstronomyShow,
+    PlanetariumDome,
+    Reservation,
+    ShowSession,
+    ShowTheme,
+    Ticket,
+)
 
 
 class ShowThemeSerializer(serializers.ModelSerializer):
