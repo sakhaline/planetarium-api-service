@@ -1,14 +1,17 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = ("django-insecure-f5$bf1$s7l17dd64_2t"
-              "_7u%i*nh#$fl^e9p-))17z_k%s^1*ex")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-9)c3f6k@^_c-)-(d1w%va=ev9hr23@*b-i1e8xz#9k^xj^8^+9"
+)
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "127.0.0.0"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -57,12 +60,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "planetarium_config.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.environ.get("DOCKER", False):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ["POSTGRES_DB"],
+            "USER": os.environ["POSTGRES_USER"],
+            "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+            "HOST": os.environ["POSTGRES_HOST"],
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3"
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -100,6 +114,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", BASE_DIR / "media")
 
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
