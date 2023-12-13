@@ -30,7 +30,7 @@ Custom user model for authentication, extending the AbstractUser model.
   - *Email: admin_@gmail.com*
   - *Password: 54321*
 
-## Getting Started
+# Getting Started
 ### Prerequisites
 Before you begin, make sure you have the following tools and technologies installed:
 
