@@ -91,6 +91,6 @@ docker-compose up
 - create user via api/user/register
 - get access token via api/user/token
 ## Schema
-![Screenshot from 2023-12-13 06-43-24.png](..%2F..%2F..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-13%2006-43-24.png)
+![Screenshot from 2023-12-13 06-43-24](https://github.com/sakhaline/planetarium-api-service/assets/130174413/f856ff4f-b364-4c7c-a8bb-95c525ddf837)
 ## Swagger Documentation
-![Screenshot from 2023-12-13 07-35-51.png](..%2F..%2F..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-13%2007-35-51.png)
+![Screenshot from 2023-12-13 07-35-51](https://github.com/sakhaline/planetarium-api-service/assets/130174413/33be0f3b-de3c-43f1-ba3d-2d16ae6026f4)
