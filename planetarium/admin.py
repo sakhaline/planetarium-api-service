@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from planetarium import models
 
-
 admin.site.register(models.ShowTheme)
 admin.site.register(models.AstronomyShow)
 admin.site.register(models.PlanetariumDome)

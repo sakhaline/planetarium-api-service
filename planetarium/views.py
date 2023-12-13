@@ -1,40 +1,39 @@
 from django.http import Http404
-from rest_framework import status, generics
-from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from rest_framework.views import APIView
 
-from planetarium.models import (ShowTheme,
-                                AstronomyShow,
+from planetarium.filters import AstronomyShowFilter, ShowSessionFilter
+from planetarium.models import (AstronomyShow,
                                 PlanetariumDome,
                                 Reservation,
-                                ShowSession,)
+                                ShowSession,
+                                ShowTheme,)
 
-from planetarium.serializers import (ShowThemeSerializer,
-                                     PlanetariumDomeSerializer,
+from planetarium.permissions import IsAdminOrIfAuthenticatedReadOnly
+from planetarium.serializers import (AstronomyShowDetailSerializer,
                                      AstronomyShowListSerializer,
-                                     AstronomyShowDetailSerializer,
                                      AstronomyShowSerializer,
-                                     ReservationSerializer,
+                                     PlanetariumDomeSerializer,
                                      ReservationListSerializer,
-                                     ShowSessionSerializer,
+                                     ReservationSerializer,
+                                     ShowSessionDetailSerializer,
                                      ShowSessionListSerializer,
-                                     ShowSessionDetailSerializer,)
-
-from planetarium.filters import ShowSessionFilter, AstronomyShowFilter
+                                     ShowSessionSerializer,
+                                     ShowThemeSerializer,)
 
 
 class ShowSessionList(generics.ListCreateAPIView):
     queryset = ShowSession.objects.all()
     serializer_class = ShowSessionListSerializer
     filterset_class = ShowSessionFilter
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return ShowSessionListSerializer
-        elif self.request.method == 'POST':
+        elif self.request.method == "POST":
             return ShowSessionSerializer
         return ShowSessionListSerializer
 
@@ -50,6 +49,8 @@ class ShowSessionList(generics.ListCreateAPIView):
 
 
 class ShowSessionDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             return ShowSession.objects.get(pk=pk)
@@ -73,7 +74,9 @@ class ShowSessionDetail(APIView):
 
     def patch(self, request, pk):
         show_session = self.get_object(pk)
-        serializer = ShowSessionSerializer(show_session, data=request.data, partial=True)
+        serializer = ShowSessionSerializer(
+            show_session, data=request.data, partial=True
+        )
 
         if serializer.is_valid():
             serializer.save()
@@ -87,65 +90,98 @@ class ShowSessionDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# class ReservationList(APIView):
+#     def get(self, request):
+#         show_sessions = Reservation.objects.all()
+#
+#         paginator = PageNumberPagination()
+#         paginator.page_size = 5
+#         result_page = paginator.paginate_queryset(show_sessions, request)
+#
+#         serializer = ReservationListSerializer(result_page, many=True)
+#         return paginator.get_paginated_response(serializer.data)
+#
+#     def post(self, request):
+#         serializer = ReservationSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ReservationList(APIView):
-    def get(self, request):
-        show_sessions = Reservation.objects.all()
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
-        paginator = PageNumberPagination()
-        paginator.page_size = 5
-        result_page = paginator.paginate_queryset(show_sessions, request)
+    def get(self, request, *args, **kwargs):
+        reservations = Reservation.objects.filter(user=request.user)
+        serializer = ReservationListSerializer(reservations, many=True)
+        return Response(serializer.data)
 
-        serializer = ReservationListSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = ReservationSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ReservationDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
-            return Reservation.objects.get(pk=pk)
+            return Reservation.objects.get(pk=pk, user=self.request.user)
         except Reservation.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk):
+    def get(self, request, pk, *args, **kwargs):
         reservation = self.get_object(pk)
         serializer = ReservationSerializer(reservation)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
-    def put(self, request, pk):
-        reservation = self.get_object(pk)
-        serializer = ReservationSerializer(reservation, data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request, pk):
-        reservation = self.get_object(pk)
-        serializer = ReservationSerializer(reservation, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        reservation = self.get_object(pk)
-        reservation.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# class ReservationDetail(APIView):
+#     def get_object(self, pk):
+#         try:
+#             return Reservation.objects.get(pk=pk)
+#         except Reservation.DoesNotExist:
+#             raise Http404
+#
+#     def get(self, request, pk):
+#         reservation = self.get_object(pk)
+#         serializer = ReservationSerializer(reservation)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#     def put(self, request, pk):
+#         reservation = self.get_object(pk)
+#         serializer = ReservationSerializer(reservation, data=request.data)
+#
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     def patch(self, request, pk):
+#         reservation = self.get_object(pk)
+#         serializer = ReservationSerializer(reservation, data=request.data, partial=True)
+#
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     def delete(self, request, pk):
+#         reservation = self.get_object(pk)
+#         reservation.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ShowThemeList(APIView):
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+
     def get(self, request):
         show_themes = ShowTheme.objects.all()
         serializer = ShowThemeSerializer(show_themes, many=True)
@@ -161,6 +197,8 @@ class ShowThemeList(APIView):
 
 
 class ShowThemeDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             return ShowTheme.objects.get(pk=pk)
@@ -202,11 +240,12 @@ class AstronomyShowList(generics.ListCreateAPIView):
     queryset = AstronomyShow.objects.all()
     serializer_class = AstronomyShowListSerializer
     filterset_class = AstronomyShowFilter
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return AstronomyShowListSerializer
-        elif self.request.method == 'POST':
+        elif self.request.method == "POST":
             return AstronomyShowSerializer
         return AstronomyShowListSerializer
 
@@ -222,6 +261,8 @@ class AstronomyShowList(generics.ListCreateAPIView):
 
 
 class AstronomyShowDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             return AstronomyShow.objects.get(pk=pk)
@@ -244,7 +285,9 @@ class AstronomyShowDetail(APIView):
 
     def patch(self, request, pk):
         astronomy_show = self.get_object(pk=pk)
-        serializer = AstronomyShowSerializer(astronomy_show, data=request.data, partial=True)
+        serializer = AstronomyShowSerializer(
+            astronomy_show, data=request.data, partial=True
+        )
 
         if serializer.is_valid():
             serializer.save()
@@ -258,6 +301,8 @@ class AstronomyShowDetail(APIView):
 
 
 class PlanetariumDomeList(APIView):
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+
     def get(self, request):
         planetarium_domes = PlanetariumDome.objects.all()
         serializer = PlanetariumDomeSerializer(planetarium_domes, many=True)
@@ -274,6 +319,8 @@ class PlanetariumDomeList(APIView):
 
 
 class PlanetariumDomeDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         try:
             return PlanetariumDome.objects.get(pk=pk)
@@ -294,10 +341,11 @@ class PlanetariumDomeDetail(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
     def patch(self, request, pk):
         planetarium_dome = self.get_object(pk=pk)
-        serializer = PlanetariumDomeSerializer(planetarium_dome, data=request.data, partial=True)
+        serializer = PlanetariumDomeSerializer(
+            planetarium_dome, data=request.data, partial=True
+        )
 
         if serializer.is_valid():
             serializer.save()
@@ -308,6 +356,3 @@ class PlanetariumDomeDetail(APIView):
         planetarium_dome = self.get_object(pk=pk)
         planetarium_dome.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-

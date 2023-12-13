@@ -1,14 +1,9 @@
-from django.db import transaction
-from django.http import Http404
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from rest_framework import serializers
 
-from planetarium.models import (ShowTheme,
-                                PlanetariumDome,
-                                AstronomyShow,
-                                Reservation,
-                                ShowSession,
-                                Ticket,)
+from planetarium.models import (AstronomyShow, PlanetariumDome, Reservation,
+                                ShowSession, ShowTheme, Ticket,)
 
 
 class ShowThemeSerializer(serializers.ModelSerializer):
@@ -35,6 +30,7 @@ class AstronomyShowListSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field="name",
     )
+
     class Meta:
         model = AstronomyShow
         fields = ["id", "title", "description", "themes"]
@@ -42,6 +38,7 @@ class AstronomyShowListSerializer(serializers.ModelSerializer):
 
 class AstronomyShowDetailSerializer(serializers.ModelSerializer):
     themes = ShowThemeSerializer(read_only=True, many=True)
+
     class Meta:
         model = AstronomyShow
         fields = ["id", "title", "description", "themes"]
@@ -104,7 +101,6 @@ class ShowSessionListSerializer(ShowSessionSerializer):
         read_only=True,
     )
 
-
     class Meta:
         model = ShowSession
         fields = [
@@ -152,6 +148,7 @@ class TicketListSerializer(TicketSerializer):
 
 class ReservationSerializer(serializers.ModelSerializer):
     tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
+
     class Meta:
         model = Reservation
         fields = ["id", "tickets", "created_at", "user"]
@@ -169,4 +166,3 @@ class ReservationSerializer(serializers.ModelSerializer):
 
 class ReservationListSerializer(ReservationSerializer):
     tickets = TicketListSerializer(many=True, read_only=True)
-

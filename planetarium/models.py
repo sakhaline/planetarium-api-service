@@ -1,5 +1,6 @@
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
+
 from planetarium_config import settings
 
 
@@ -27,7 +28,8 @@ class AstronomyShow(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     themes = models.ManyToManyField(
-        to=ShowTheme, related_name="astronomy_shows",
+        to=ShowTheme,
+        related_name="astronomy_shows",
     )
 
     def __str__(self):
@@ -37,7 +39,8 @@ class AstronomyShow(models.Model):
 class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
     )
 
     class Meta:
@@ -49,10 +52,14 @@ class Reservation(models.Model):
 
 class ShowSession(models.Model):
     astronomy_show = models.ForeignKey(
-        to=AstronomyShow, related_name="show_sessions", on_delete=models.CASCADE,
+        to=AstronomyShow,
+        related_name="show_sessions",
+        on_delete=models.CASCADE,
     )
     planetarium_dome = models.ForeignKey(
-        to=PlanetariumDome, related_name="show_sessions", on_delete=models.CASCADE,
+        to=PlanetariumDome,
+        related_name="show_sessions",
+        on_delete=models.CASCADE,
     )
     show_time = models.DateTimeField()
 
@@ -73,10 +80,14 @@ class Ticket(models.Model):
     row = models.IntegerField()
     seat = models.IntegerField()
     show_session = models.ForeignKey(
-        to=ShowSession, related_name="tickets", on_delete=models.CASCADE,
+        to=ShowSession,
+        related_name="tickets",
+        on_delete=models.CASCADE,
     )
     reservation = models.ForeignKey(
-        to=Reservation, related_name="tickets", on_delete=models.CASCADE,
+        to=Reservation,
+        related_name="tickets",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
@@ -107,18 +118,17 @@ class Ticket(models.Model):
             ValidationError,
         )
 
-    def save(self,
-            force_insert=False,
-            force_update=False,
-            using=None,
-            update_fields=None,):
-
+    def save(
+        self,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None,
+    ):
         self.full_clean()
         return super(Ticket, self).save(
             force_insert, force_update, using, update_fields
         )
 
     def __str__(self):
-        return f"{self.show_session}"\
-               f"row: {self.row}, seat: {self.seat}"
-
+        return f"{self.show_session}" f"row: {self.row}, seat: {self.seat}"
