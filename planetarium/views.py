@@ -5,27 +5,33 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from planetarium.filters import AstronomyShowFilter, ShowSessionFilter
-from planetarium.models import (AstronomyShow,
-                                PlanetariumDome,
-                                Reservation,
-                                ShowSession,
-                                ShowTheme,)
+from planetarium.models import (
+    AstronomyShow,
+    PlanetariumDome,
+    Reservation,
+    ShowSession,
+    ShowTheme,
+)
 
 from planetarium.permissions import IsAdminOrIfAuthenticatedReadOnly
-from planetarium.serializers import (AstronomyShowDetailSerializer,
-                                     AstronomyShowListSerializer,
-                                     AstronomyShowSerializer,
-                                     PlanetariumDomeSerializer,
-                                     ReservationListSerializer,
-                                     ReservationSerializer,
-                                     ShowSessionDetailSerializer,
-                                     ShowSessionListSerializer,
-                                     ShowSessionSerializer,
-                                     ShowThemeSerializer,)
+from planetarium.serializers import (
+    AstronomyShowDetailSerializer,
+    AstronomyShowListSerializer,
+    AstronomyShowSerializer,
+    PlanetariumDomeSerializer,
+    ReservationListSerializer,
+    ReservationSerializer,
+    ShowSessionDetailSerializer,
+    ShowSessionListSerializer,
+    ShowSessionSerializer,
+    ShowThemeSerializer,
+)
 
 
 class ShowSessionList(generics.ListCreateAPIView):
-    queryset = ShowSession.objects.all()
+    queryset = ShowSession.objects.select_related(
+        "astronomy_show", "planetarium_dome"
+    )
     serializer_class = ShowSessionListSerializer
     filterset_class = ShowSessionFilter
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
@@ -90,31 +96,15 @@ class ShowSessionDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class ReservationList(APIView):
-#     def get(self, request):
-#         show_sessions = Reservation.objects.all()
-#
-#         paginator = PageNumberPagination()
-#         paginator.page_size = 5
-#         result_page = paginator.paginate_queryset(show_sessions, request)
-#
-#         serializer = ReservationListSerializer(result_page, many=True)
-#         return paginator.get_paginated_response(serializer.data)
-#
-#     def post(self, request):
-#         serializer = ReservationSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class ReservationList(APIView):
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
     def get(self, request, *args, **kwargs):
-        reservations = Reservation.objects.filter(user=request.user)
+        reservations = Reservation.objects.prefetch_related(
+            "tickets__show_session__astronomy_show",
+            "tickets__show_session__planetarium_dome",
+        ).filter(user=request.user)
+
         serializer = ReservationListSerializer(reservations, many=True)
         return Response(serializer.data)
 
@@ -139,44 +129,6 @@ class ReservationDetail(APIView):
         reservation = self.get_object(pk)
         serializer = ReservationSerializer(reservation)
         return Response(serializer.data)
-
-
-# class ReservationDetail(APIView):
-#     def get_object(self, pk):
-#         try:
-#             return Reservation.objects.get(pk=pk)
-#         except Reservation.DoesNotExist:
-#             raise Http404
-#
-#     def get(self, request, pk):
-#         reservation = self.get_object(pk)
-#         serializer = ReservationSerializer(reservation)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#     def put(self, request, pk):
-#         reservation = self.get_object(pk)
-#         serializer = ReservationSerializer(reservation, data=request.data)
-#
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#     def patch(self, request, pk):
-#         reservation = self.get_object(pk)
-#         serializer = ReservationSerializer(reservation, data=request.data, partial=True)
-#
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#     def delete(self, request, pk):
-#         reservation = self.get_object(pk)
-#         reservation.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ShowThemeList(APIView):
@@ -222,7 +174,9 @@ class ShowThemeDetail(APIView):
 
     def patch(self, request, pk):
         show_theme = self.get_object(pk)
-        serializer = ShowThemeSerializer(show_theme, data=request.data, partial=True)
+        serializer = ShowThemeSerializer(
+            show_theme, data=request.data, partial=True,
+        )
 
         if serializer.is_valid():
             serializer.save()
@@ -237,7 +191,7 @@ class ShowThemeDetail(APIView):
 
 
 class AstronomyShowList(generics.ListCreateAPIView):
-    queryset = AstronomyShow.objects.all()
+    queryset = AstronomyShow.objects.prefetch_related("themes")
     serializer_class = AstronomyShowListSerializer
     filterset_class = AstronomyShowFilter
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
@@ -334,7 +288,9 @@ class PlanetariumDomeDetail(APIView):
 
     def put(self, request, pk):
         planetarium_dome = self.get_object(pk=pk)
-        serializer = PlanetariumDomeSerializer(planetarium_dome, data=request.data)
+        serializer = PlanetariumDomeSerializer(
+            planetarium_dome, data=request.data,
+        )
 
         if serializer.is_valid():
             serializer.save()
