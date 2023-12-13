@@ -92,5 +92,5 @@ docker-compose up
 - get access token via api/user/token
 ## Schema
 ![Screenshot from 2023-12-13 06-43-24.png](..%2F..%2F..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-13%2006-43-24.png)
-## Representation
+## Swagger Documentation
 ![Screenshot from 2023-12-13 07-35-51.png](..%2F..%2F..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-13%2007-35-51.png)
