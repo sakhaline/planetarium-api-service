@@ -123,7 +123,7 @@ SIMPLE_JWT = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Planetarium API",
+    "TITLE": "API Planetarium Service",
     "DESCRIPTION": (
         'The Planetarium API allows users to explore and "'
         '"reserve seats for captivating astronomy shows in a planetarium dome.'
