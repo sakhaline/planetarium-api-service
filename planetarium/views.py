@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.http import Http404
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -43,6 +44,7 @@ class ShowSessionList(generics.ListCreateAPIView):
             return ShowSessionSerializer
         return ShowSessionListSerializer
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=request.data)
@@ -72,6 +74,7 @@ class ShowSessionDetail(APIView):
         serializer = ShowSessionDetailSerializer(show_session)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @transaction.atomic
     def put(self, request, pk):
         show_session = self.get_object(pk)
         serializer = ShowSessionSerializer(show_session, data=request.data)
@@ -82,6 +85,7 @@ class ShowSessionDetail(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @transaction.atomic
     def patch(self, request, pk):
         show_session = self.get_object(pk)
         serializer = ShowSessionSerializer(
@@ -116,6 +120,7 @@ class ReservationList(APIView):
         serializer = ReservationListSerializer(reservations, many=True)
         return Response(serializer.data)
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         serializer = ReservationSerializer(data=request.data)
         try:
@@ -153,6 +158,7 @@ class ShowThemeList(APIView):
         serializer = ShowThemeSerializer(show_themes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @transaction.atomic
     def post(self, request):
         serializer = ShowThemeSerializer(data=request.data)
         try:
@@ -181,6 +187,7 @@ class ShowThemeDetail(APIView):
         serializer = ShowThemeSerializer(show_theme)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @transaction.atomic
     def put(self, request, pk):
         show_theme = self.get_object(pk)
         serializer = ShowThemeSerializer(show_theme, data=request.data)
@@ -196,6 +203,7 @@ class ShowThemeDetail(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @transaction.atomic
     def patch(self, request, pk):
         show_theme = self.get_object(pk)
         serializer = ShowThemeSerializer(
@@ -231,6 +239,7 @@ class AstronomyShowList(generics.ListCreateAPIView):
             return AstronomyShowSerializer
         return AstronomyShowListSerializer
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=request.data)
@@ -260,6 +269,7 @@ class AstronomyShowDetail(APIView):
         serializer = AstronomyShowDetailSerializer(astronomy_show)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @transaction.atomic
     def put(self, request, pk):
         astronomy_show = self.get_object(pk=pk)
         serializer = AstronomyShowSerializer(astronomy_show, data=request.data)
@@ -274,6 +284,7 @@ class AstronomyShowDetail(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @transaction.atomic
     def patch(self, request, pk):
         astronomy_show = self.get_object(pk=pk)
         serializer = AstronomyShowSerializer(
@@ -304,6 +315,7 @@ class PlanetariumDomeList(APIView):
         serializer = PlanetariumDomeSerializer(planetarium_domes, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @transaction.atomic
     def post(self, request):
         serializer = PlanetariumDomeSerializer(data=request.data)
         try:
@@ -332,6 +344,7 @@ class PlanetariumDomeDetail(APIView):
         serializer = PlanetariumDomeSerializer(planetarium_dome)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @transaction.atomic
     def put(self, request, pk):
         planetarium_dome = self.get_object(pk=pk)
         serializer = PlanetariumDomeSerializer(
@@ -348,6 +361,7 @@ class PlanetariumDomeDetail(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @transaction.atomic
     def patch(self, request, pk):
         planetarium_dome = self.get_object(pk=pk)
         serializer = PlanetariumDomeSerializer(
