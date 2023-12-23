@@ -1,4 +1,4 @@
-# API Planetarium Service
+# PlanetariumService API
 
 The API Planetarium Service is a comprehensive platform that enables the management and orchestration of a virtual planetarium experience, facilitating astronomy shows, reservations, and ticketing within a simulated planetarium dome. The service is designed to provide a seamless and immersive experience for both administrators and users interested in exploring the wonders of the cosmos.
 
@@ -25,18 +25,13 @@ Reserve specific seats for a show with detailed information on seat location, sh
 ### User:
 Custom user model for authentication, extending the AbstractUser model.
 
-**Admin Credentials:**
-
-  - *Email: admin_@gmail.com*
-  - *Password: 54321*
-
 # Getting Started
 ### Prerequisites
 Before you begin, make sure you have the following tools and technologies installed:
 
 - Python (>=3.6)
-- Django
-- Django REST framework
+- Docker
+- Docker Compose
 
 ### Installing using GitHub
 1. Open Terminal and open folder to clone project in.
@@ -45,48 +40,13 @@ Before you begin, make sure you have the following tools and technologies instal
 ```bash
 git clone https://github.com/sakhaline/planetarium-api-service.git
 ```
-3. Open cloned folder in terminal.
-4. If you don't have pip installed [install it here](https://pip.pypa.io/en/stable/installation/#).
-5. Create and activate **Virtual environment**:
-
-**Windows**
+3. You can open project in IDE and configure .env file using .env.sample file 
+as an example.
+4. Build and run the Docker containers:
 ```bash
-python -m venv venv
+docker-compose up --build
 ```
-```bash
-venv\Scripts\activate
-```
-**MacOS or Linux**
-```bash
-python3 -m venv venv
-```
-```bash
-source venv/bin/activate
-```
-6. Open cloned folder and install needed requirements using:
-```bash
-pip install -r requirements.txt
-```
-7. Migrate:
-```bash
-python manage.py migrate
-```
-8. Install database fixture:
-```bash
-python manage.py loaddata db_data.json
-```
-9. Create .env file using *env_example* file
-10. Run server:
-```bash
-python manage.py runserver
-```
-11. Go to http://127.0.0.1:8000/
-### Run with Docker
-Docker should be installed.
-```bash
-docker-compose build
-docker-compose up
-```
+The API will be accessible at http://localhost:8000/.
 ### Getting access:
 - create user via api/user/register
 - get access token via api/user/token
