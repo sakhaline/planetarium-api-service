@@ -46,12 +46,16 @@ class ShowSessionList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=request.data)
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class ShowSessionDetail(APIView):
@@ -83,12 +87,16 @@ class ShowSessionDetail(APIView):
         serializer = ShowSessionSerializer(
             show_session, data=request.data, partial=True
         )
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def delete(self, request, pk):
         show_session = self.get_object(pk)
@@ -110,11 +118,16 @@ class ReservationList(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = ReservationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
+        try:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class ReservationDetail(APIView):
@@ -142,11 +155,16 @@ class ShowThemeList(APIView):
 
     def post(self, request):
         serializer = ShowThemeSerializer(data=request.data)
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class ShowThemeDetail(APIView):
@@ -167,23 +185,32 @@ class ShowThemeDetail(APIView):
         show_theme = self.get_object(pk)
         serializer = ShowThemeSerializer(show_theme, data=request.data)
 
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def patch(self, request, pk):
         show_theme = self.get_object(pk)
         serializer = ShowThemeSerializer(
             show_theme, data=request.data, partial=True,
         )
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def delete(self, request, pk):
         show_theme = self.get_object(pk)
@@ -207,12 +234,16 @@ class AstronomyShowList(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer_class = self.get_serializer_class()
         serializer = serializer_class(data=request.data)
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class AstronomyShowDetail(APIView):
@@ -232,24 +263,32 @@ class AstronomyShowDetail(APIView):
     def put(self, request, pk):
         astronomy_show = self.get_object(pk=pk)
         serializer = AstronomyShowSerializer(astronomy_show, data=request.data)
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def patch(self, request, pk):
         astronomy_show = self.get_object(pk=pk)
         serializer = AstronomyShowSerializer(
             astronomy_show, data=request.data, partial=True
         )
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def delete(self, request, pk):
         astronomy_show = self.get_object(pk=pk)
@@ -267,12 +306,16 @@ class PlanetariumDomeList(APIView):
 
     def post(self, request):
         serializer = PlanetariumDomeSerializer(data=request.data)
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class PlanetariumDomeDetail(APIView):
@@ -294,24 +337,32 @@ class PlanetariumDomeDetail(APIView):
         serializer = PlanetariumDomeSerializer(
             planetarium_dome, data=request.data,
         )
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def patch(self, request, pk):
         planetarium_dome = self.get_object(pk=pk)
         serializer = PlanetariumDomeSerializer(
             planetarium_dome, data=request.data, partial=True
         )
-
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response(
+                data={"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def delete(self, request, pk):
         planetarium_dome = self.get_object(pk=pk)
